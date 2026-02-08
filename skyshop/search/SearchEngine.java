@@ -1,12 +1,13 @@
 package org.skypro.skyshop.search;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SearchEngine {
-    private Searchable[] searchableItems;
-    private int count;
+    private List<Searchable> searchableItems;
 
     public SearchEngine(int capacity) {
-        this.searchableItems = new Searchable[capacity];
-        this.count = 0;
+        this.searchableItems = new ArrayList<>(capacity);
     }
 
     private int countOccurrences(String source, String substring) {
@@ -32,15 +33,14 @@ public class SearchEngine {
     }
 
     public Searchable findBestMatch(String search) throws BestResultNotFound {
-        if (count == 0) {
+        if (searchableItems.isEmpty()) {
             throw new BestResultNotFound(search);
         }
 
         Searchable bestMatch = null;
         int maxOccurrences = 0;
 
-        for (int i = 0; i < count; i++) {
-            Searchable item = searchableItems[i];
+        for (Searchable item : searchableItems) {
             String searchTerm = item.getSearchTerm();
             int occurrences = countOccurrences(searchTerm, search);
 
@@ -58,35 +58,24 @@ public class SearchEngine {
     }
 
     public void add(Searchable item) {
-        if (count < searchableItems.length) {
-            searchableItems[count] = item;
-            count++;
-        } else {
-            System.out.println("Поиск переполнен! Не удалось добавить: " + item.getName());
-        }
+        searchableItems.add(item);
     }
 
-    public Searchable[] search(String searchString) {
-        Searchable[] results = new Searchable[5];
-        int foundCount = 0;
-        for (int i = 0; i < count; i++) {
-            Searchable item = searchableItems[i];
-            if (item.getSearchTerm().toLowerCase().contains(searchString.toLowerCase())) {
-                results[foundCount] = item;
-                foundCount++;
-                if (foundCount >= 5) {
-                    break;
-                }
+    public List<Searchable> search(String searchString) {
+        List<Searchable> results = new ArrayList<>();
+        for (Searchable item : searchableItems) {
+            if (item.getSearchTerm().toLowerCase().contains(searchString.toLowerCase())){
+                results.add(item);
             }
         }
         return results;
     }
 
     public int getCount() {
-        return count;
+        return searchableItems.size();
     }
 
     public int getCapacity() {
-        return searchableItems.length;
+        return Integer.MAX_VALUE;
     }
 }

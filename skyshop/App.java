@@ -9,7 +9,7 @@ import org.skypro.skyshop.search.SearchEngine;
 import org.skypro.skyshop.search.Searchable;
 import org.skypro.skyshop.search.BestResultNotFound;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.skypro.skyshop.article.Article;
 
@@ -74,7 +74,8 @@ public class App {
         Product laptop = new DiscountedProduct("Ноутбук игровой", 80000, 10);
         Product phone2 = new FixPriceProduct("Телефон Samsung ");
         Product tablet = new SimpleProduct("Планшет Apple iPad", 70000);
-
+        Product mouse = new SimpleProduct("Мышь компьютерная", 5000);
+        Product mouse2 = new SimpleProduct("Мышь игровая", 7000);
         Article article1 = new Article(
                 "Как выбрать смартфон",
                 "Современные смартфоны отличаются процессорами, камерами и объемом памяти..... "
@@ -98,6 +99,8 @@ public class App {
         searchEngine.add(laptop);
         searchEngine.add(phone2);
         searchEngine.add(tablet);
+        searchEngine.add(mouse);
+        searchEngine.add(mouse2);
         searchEngine.add(article1);
         searchEngine.add(article2);
         searchEngine.add(article3);
@@ -145,94 +148,104 @@ public class App {
             System.out.println("Исключение: " + e.getMessage());
         }
         System.out.println();
-        System.out.println("Код предыдущей работы");
         System.out.println();
         System.out.println("Добавлено элементов: " + searchEngine.getCount());
         System.out.println("Проверка поиска по слову 'Телефон'");
-        Searchable[] results1 = searchEngine.search("Телефон");
-        System.out.println("Результат: " + Arrays.toString(results1));
+        List<Searchable> results1 = searchEngine.search("Телефон");
+        System.out.println("Результат: " + results1.size());
         System.out.println("Детализация:");
-        for (int i = 0; i < results1.length; i++) {
-            if (results1[i] != null) {
-                System.out.println((i + 1) + ". " + results1[i].getStringRepresentation());
-            }
+        int counter = 1;
+        for (Searchable result : results1) {
+            System.out.println((counter++) + ". " + result.getStringRepresentation());
         }
         System.out.println();
 
         System.out.println("Поиск по слову 'выбрать' (встречается в статьях)");
-        Searchable[] results2 = searchEngine.search("выбрать");
-        System.out.println("Результат: " + Arrays.toString(results2));
+        List<Searchable> results2 = searchEngine.search("выбрать");
+        System.out.println("Найдено результатов: " + results2.size());
         System.out.println("Детализация:");
-        for (int i = 0; i < results2.length; i++) {
-            if (results2[i] != null) {
-                System.out.println((i + 1) + ". " + results2[i].getStringRepresentation());
-            }
+        counter = 1;
+        for (Searchable result : results2) {
+            System.out.println(counter++ + ". " + result.getStringRepresentation());
         }
         System.out.println();
 
         System.out.println("Поиск по части слова 'план'");
-        Searchable[] results3 = searchEngine.search("план");
-        System.out.println("Результат: " + Arrays.toString(results3));
+        List<Searchable> results3 = searchEngine.search("план");
+        System.out.println("Найдено результатов: " + results3.size());
         System.out.println("Детализация:");
         for (Searchable result : results3) {
-            if (result != null) {
-                System.out.println("• " + result.getStringRepresentation());
-            }
+            System.out.println("• " + result.getStringRepresentation());
         }
         System.out.println();
+
 
         System.out.println("Поиск по несуществующему слову 'автомобиль'");
-        Searchable[] results6 = searchEngine.search("автомобиль");
-        System.out.println("Результаты: " + Arrays.toString(results6));
-        System.out.println("(все элементы null - ничего не найдено)");
+        List<Searchable> results4 = searchEngine.search("автомобиль");
+        System.out.println("Найдено результатов: " + results4.size());
+        if (results4.isEmpty()) {
+            System.out.println("(ничего не найдено)");
+        }
         System.out.println();
 
-        System.out.println("Проверка ограничения в 5 результатов");
         System.out.println("Поиск по букве 'и' :");
-        Searchable[] results7 = searchEngine.search("и");
-        System.out.println("Найдено результатов: " + countNonNull(results7) + " (максимум 5)");
-        System.out.println("Результаты: " + Arrays.toString(results7));
+        List<Searchable> results5 = searchEngine.search("и");
+        System.out.println("Найдено результатов: " + results5.size());
+        System.out.println();
 
         ProductBasket basket1 = new ProductBasket();
-        System.out.println("1. Добавление продукта в корзину:");
+        System.out.println("Добавление продукта в корзину:");
         basket1.addProduct(phone);
         basket1.addProduct(laptop);
+        basket1.addProduct(mouse);
+        basket1.addProduct(mouse2);
+        basket1.addProduct(phone2);
         basket1.printContents();
-        System.out.println("2. Добавление продуктов в переполненную корзину:");
-        ProductBasket basket2 = new ProductBasket();
-        basket2.addProduct(phone2);
-        basket2.addProduct(tablet);
-        basket2.addProduct(phone);
-        basket2.addProduct(phone2);
-        basket2.printContents();
-        System.out.println("3. Печать содержимого корзины с несколькими товарами:");
+        System.out.println();
+
+        System.out.println("Вывод содержимого корзины:");
         basket1.printContents();
-        System.out.println("4. Получение стоимости корзины с несколькими товарами:");
         int totalPrice = basket1.getTotalPrice();
         System.out.println("Общая стоимость корзины: " + totalPrice + " рублей");
-        System.out.println("5/6. Поиск товаров, которые есть и нет в корзине:");
-        boolean searchPhone = basket1.containsProduct("Телефон ");
-        boolean searchMouse = basket1.containsProduct("Мышь ");
+        System.out.println();
+
+        System.out.println("Поиск товаров, которые есть и нет в корзине:");
+        boolean searchPhone = basket1.containsProduct("Телефон");
+        boolean searchMouse = basket1.containsProduct("Мышь игровая");
         System.out.println(searchPhone);
         System.out.println(searchMouse);
-        System.out.println("7. Очистка корзины");
+        System.out.println();
+        System.out.println("Удаление товара 'Мышь компьютерная' из корзины:");
+        List<Product> removedProducts = basket1.removeProductsByName("Мышь компьютерная");
+        System.out.println("Удаленные товары:");
+        for (Product product : removedProducts) {
+            System.out.println("  - " + product.toString());
+        }
+        System.out.println("Содержимое корзины после удаления:");
+        basket1.printContents();
+        System.out.println();
+
+        System.out.println("Удаление несуществующего продукта 'Монитор':");
+        List<Product> removedNonExistent = basket1.removeProductsByName("Монитор");
+        if (removedNonExistent.isEmpty()) {
+            System.out.println("Продукт не найден в корзине");
+        }
+        System.out.println("Содержимое корзины:");
+        basket1.printContents();
+        System.out.println();
+
+        System.out.println("Очистка корзины");
         basket1.clearBasket();
         basket1.printContents();
-        System.out.println("9. Получение стоимости пустой корзины:");
+        System.out.println();
+
+        System.out.println("Вывод стоимости пустой корзины:");
         totalPrice = basket1.getTotalPrice();
         System.out.println("Общая стоимость корзины: " + totalPrice + " рублей");
-        System.out.println("10. Поиск товара по имени в пустой корзине:");
+        System.out.println();
+
+        System.out.println("Поиск товара по имени в пустой корзине:");
         boolean searchPhone2 = basket1.containsProduct("Телефон");
         System.out.println(searchPhone2);
-    }
-
-    private static int countNonNull(Searchable[] array) {
-        int count = 0;
-        for (Searchable item : array) {
-            if (item != null) {
-                count++;
-            }
-        }
-        return count;
     }
 }
